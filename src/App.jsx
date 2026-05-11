@@ -224,6 +224,14 @@ function App() {
 
     const updateProjectScroll = () => {
       rafId = 0;
+      const shouldUseVerticalProjects = window.matchMedia('(max-width: 760px)').matches;
+
+      if (shouldUseVerticalProjects) {
+        track.style.transform = 'translate3d(0, 0, 0)';
+        section.style.setProperty('--project-progress', '0');
+        return;
+      }
+
       const viewport = section.querySelector('.project-viewport');
       const sectionTop = section.getBoundingClientRect().top + window.scrollY;
       const scrollRange = Math.max(1, section.offsetHeight - window.innerHeight);
@@ -382,24 +390,48 @@ function App() {
 
       <section className="content-section glass-panel about-section" id="about">
         <div className="about-grid">
-          <div>
+          <div className="about-lead">
             <AnimatedSectionHeading
               eyebrow="About Me"
               title="I turn ideas into interfaces that feel clear, fast, and useful."
               eyebrowDelay={60}
               titleDelay={22}
             />
-          </div>
-          <div className="about-copy">
             <p>
-              I work at the intersection of front-end development, UX design, and product thinking.
-              My focus is simple: make the screen easier to understand, make the flow easier to
-              complete, and make the result feel polished without adding visual noise.
+              Front-end developer with product instincts, building responsive interfaces,
+              AI-assisted workflows, and practical web systems.
             </p>
             <div className="about-proof">
               <span>React UI</span>
               <span>Product Thinking</span>
               <span>AI Workflows</span>
+            </div>
+          </div>
+          <div className="about-copy">
+            <p>
+              I work at the intersection of front-end development, UX design, and product thinking.
+              I build with JavaScript, TypeScript, React, HTML, and CSS, then connect ideas to
+              practical back-end and database tools like Firebase, Supabase, and Spring Boot when a
+              project needs more than a static interface.
+            </p>
+            <div className="about-stack">
+              <div>
+                <strong>Front-end</strong>
+                <span>JavaScript</span>
+                <span>TypeScript</span>
+                <span>React</span>
+                <span>HTML</span>
+                <span>CSS</span>
+              </div>
+              <div>
+                <strong>Database</strong>
+                <span>Firebase</span>
+                <span>Supabase</span>
+              </div>
+              <div>
+                <strong>Back-end</strong>
+                <span>Spring Boot</span>
+              </div>
             </div>
           </div>
         </div>

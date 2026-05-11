@@ -79,7 +79,7 @@ const PillNav = ({
 
     const menu = mobileMenuRef.current;
     if (menu) {
-      gsap.set(menu, { visibility: 'hidden', opacity: 0, scaleY: 1 });
+      gsap.set(menu, { display: 'none', visibility: 'hidden', opacity: 0, scaleY: 1 });
     }
 
     if (initialLoadAnimation) {
@@ -143,16 +143,13 @@ const PillNav = ({
     });
   };
 
-  const toggleMobileMenu = () => {
-    const newState = !isMobileMenuOpen;
-    setIsMobileMenuOpen(newState);
-
+  const animateMobileMenu = (open) => {
     const hamburger = hamburgerRef.current;
     const menu = mobileMenuRef.current;
 
     if (hamburger) {
       const lines = hamburger.querySelectorAll('.hamburger-line');
-      if (newState) {
+      if (open) {
         gsap.to(lines[0], { rotation: 45, y: 3, duration: 0.3, ease });
         gsap.to(lines[1], { rotation: -45, y: -3, duration: 0.3, ease });
       } else {
@@ -162,8 +159,8 @@ const PillNav = ({
     }
 
     if (menu) {
-      if (newState) {
-        gsap.set(menu, { visibility: 'visible' });
+      if (open) {
+        gsap.set(menu, { display: 'block', visibility: 'visible' });
         gsap.fromTo(
           menu,
           { opacity: 0, y: 10, scaleY: 1 },
@@ -185,13 +182,43 @@ const PillNav = ({
           ease,
           transformOrigin: 'top center',
           onComplete: () => {
-            gsap.set(menu, { visibility: 'hidden' });
+            gsap.set(menu, { display: 'none', visibility: 'hidden' });
           },
         });
       }
     }
+  };
+
+  const toggleMobileMenu = () => {
+    const newState = !isMobileMenuOpen;
+    setIsMobileMenuOpen(newState);
+    animateMobileMenu(newState);
 
     onMobileMenuClick?.();
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    animateMobileMenu(false);
+  };
+
+  const handleMobileLinkClick = (event, href) => {
+    if (!href?.startsWith('#')) {
+      closeMobileMenu();
+      return;
+    }
+
+    event.preventDefault();
+    closeMobileMenu();
+
+    window.setTimeout(() => {
+      const target = document.querySelector(href);
+      if (!target) return;
+
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.pushState(null, '', href);
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+    }, 230);
   };
 
   const isExternalLink = (href) =>
@@ -300,6 +327,7 @@ const PillNav = ({
           className="mobile-menu-button mobile-only"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
+          aria-expanded={isMobileMenuOpen}
           ref={hamburgerRef}
         >
           <span className="hamburger-line" />
@@ -307,7 +335,11 @@ const PillNav = ({
         </button>
       </nav>
 
-      <div className="mobile-menu-popover mobile-only" ref={mobileMenuRef} style={cssVars}>
+      <div
+        className={`mobile-menu-popover mobile-only${isMobileMenuOpen ? ' is-open' : ''}`}
+        ref={mobileMenuRef}
+        style={cssVars}
+      >
         <ul className="mobile-menu-list">
           {items.map((item, i) => (
             <li key={item.href || `mobile-item-${i}`}>
@@ -315,7 +347,7 @@ const PillNav = ({
                 <a
                   href={item.href}
                   className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(event) => handleMobileLinkClick(event, item.href)}
                 >
                   {item.label}
                 </a>
@@ -323,7 +355,7 @@ const PillNav = ({
                 <a
                   href={item.href}
                   className={`mobile-menu-link${activeHref === item.href ? ' is-active' : ''}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(event) => handleMobileLinkClick(event, item.href)}
                 >
                   {item.label}
                 </a>
