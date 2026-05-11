@@ -1,4 +1,5 @@
 import BlurText from './components/BlurText';
+import CircularGallery from './components/CircularGallery';
 import LineWaves from './components/LineWaves';
 import LogoLoop from './components/LogoLoop';
 import PillNav from './components/PillNav';
@@ -24,6 +25,27 @@ const userResearchImage = new URL('../scroll stack pics/user research.jpg', impo
 const interfaceDesignImage = new URL('../scroll stack pics/interface design.jpg', import.meta.url).href;
 const aiAgentProjectImage = new URL('../projects pics/ai agent.png', import.meta.url).href;
 const abductedProjectImage = new URL('../projects pics/abducted.jpeg', import.meta.url).href;
+const designImageModules = import.meta.glob('../pic for designs/*.{jpg,jpeg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
+
+const designGalleryItems = Object.entries(designImageModules)
+  .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+  .map(([path, image]) => {
+    const fileName = path.split('/').pop()?.replace(/\.[^.]+$/, '') || 'Design Study';
+    const text = fileName
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/\b(ai|ui|ux)\b/gi, (match) => match.toUpperCase())
+      .trim();
+
+    return {
+      image,
+      text: text.length > 34 ? `${text.slice(0, 31).trim()}...` : text,
+    };
+  });
 
 const skills = [
   'React',
@@ -116,6 +138,7 @@ const projects = [
 const navItems = [
   { label: 'About', href: '#about' },
   { label: 'Education', href: '#education' },
+  { label: 'Designs', href: '#designs' },
   { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
   { label: 'Contact', href: '#contact' },
@@ -294,6 +317,7 @@ function App() {
       '.about-section',
       '.education-card',
       '.discipline-card',
+      '.design-gallery-section',
       '#skills',
       '.contact-mini',
       '.project-card',
@@ -605,6 +629,34 @@ function App() {
             </ScrollStackItem>
           ))}
         </ScrollStack>
+      </section>
+
+      <section className="content-section glass-panel design-gallery-section" id="designs">
+        <div className="design-gallery-header">
+          <AnimatedSectionHeading
+            eyebrow="Design Moodboard"
+            title="Interface inspiration with a product-minded edge"
+            staticMode={mobilePerformanceMode}
+          />
+          <p>
+            A curated gallery of visual studies, UI details, and digital product references that
+            shape my sense of layout, polish, and interaction.
+          </p>
+        </div>
+        <div className="design-gallery-frame">
+          <CircularGallery
+            items={designGalleryItems}
+            bend={mobilePerformanceMode ? 1.25 : 3}
+            textColor="#f9f9f9"
+            borderRadius={0.07}
+            scrollSpeed={mobilePerformanceMode ? 1.4 : 2.2}
+            scrollEase={0.035}
+            showLabels={false}
+            autoScroll
+            autoScrollSpeed={mobilePerformanceMode ? 0.01 : 0.018}
+            pauseOnHover
+          />
+        </div>
       </section>
 
       <section className="split-layout">
