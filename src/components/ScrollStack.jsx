@@ -59,8 +59,15 @@ const ScrollStack = ({
   const getElementOffset = useCallback(
     (element) => {
       if (useWindowScroll) {
-        const rect = element.getBoundingClientRect();
-        return rect.top + window.scrollY;
+        let offset = 0;
+        let current = element;
+
+        while (current) {
+          offset += current.offsetTop;
+          current = current.offsetParent;
+        }
+
+        return offset;
       }
       return element.offsetTop;
     },

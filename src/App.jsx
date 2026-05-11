@@ -4,7 +4,7 @@ import LogoLoop from './components/LogoLoop';
 import PillNav from './components/PillNav';
 import ScrollStack, { ScrollStackItem } from './components/ScrollStack';
 import SplitText from './components/SplitText';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
 const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
@@ -16,6 +16,14 @@ const deepseekLogo = new URL('../logos/Why DeepSeek’s logo represents a new er
 const vscodeLogo = new URL('../logos/Visual Studio Code logo in vector format - Brandlogos_net.jpg', import.meta.url).href;
 const linkedinLogo = new URL('../logos/Inloggen.jpg', import.meta.url).href;
 const extraLogo = new URL('../logos/download (6).jpg', import.meta.url).href;
+const uxDesignImage = new URL('../scroll stack pics/ux design.jpg', import.meta.url).href;
+const productThinkingImage = new URL('../scroll stack pics/product thinking.jpg', import.meta.url).href;
+const frontEndImage = new URL('../scroll stack pics/front end developing.jpg', import.meta.url).href;
+const aiIntegrationImage = new URL('../scroll stack pics/ai integration.jpg', import.meta.url).href;
+const userResearchImage = new URL('../scroll stack pics/user research.jpg', import.meta.url).href;
+const interfaceDesignImage = new URL('../scroll stack pics/interface design.jpg', import.meta.url).href;
+const aiAgentProjectImage = new URL('../projects pics/ai agent.png', import.meta.url).href;
+const abductedProjectImage = new URL('../projects pics/abducted.jpeg', import.meta.url).href;
 
 const skills = [
   'React',
@@ -28,39 +36,80 @@ const skills = [
   'UI Systems',
 ];
 
+const skillGroups = [
+  {
+    title: 'Build',
+    items: ['React', 'JavaScript', 'HTML5', 'CSS3', 'Responsive UI'],
+  },
+  {
+    title: 'Design',
+    items: ['Figma', 'UX flows', 'Interface systems', 'Accessibility'],
+  },
+  {
+    title: 'Product',
+    items: ['AI-assisted workflows', 'Dashboards', 'Kiosk systems', 'Case study thinking'],
+  },
+];
+
 const highlights = [
   {
-    title: 'BSIT Graduate',
-    text: 'Focused on building strong foundations in modern web development and clean user experiences.',
+    title: 'Front-end first',
+    text: 'I build interfaces that are clean, responsive, and easy to scan under real user pressure.',
   },
   {
-    title: 'Front End Developer',
-    text: 'Turning ideas into fast, polished interfaces with a glassmorphism touch and a modern visual rhythm.',
+    title: 'Product aware',
+    text: 'I think beyond screens: what the feature solves, who it helps, and how the flow should behave.',
   },
   {
-    title: 'Canlaon City',
-    text: 'Based in Negros Oriental and ready for opportunities, collaborations, and portfolio work.',
+    title: 'AI curious',
+    text: 'I use AI as a practical layer for research, workflow ideas, and smarter product experiences.',
   },
 ];
 
 const projects = [
   {
-    name: 'Campus Connect',
-    type: 'Student portal concept',
-    description: 'A clean dashboard concept for announcements, schedules, and student resources.',
-    tags: ['React', 'Dashboards', 'Responsive UI'],
+    name: 'Lifewood Website',
+    type: 'Full-stack website',
+    role: 'Full-stack developer',
+    description: 'A complete web platform shaped around clean presentation, responsive layouts, and practical data-backed features.',
+    outcome: 'Built as a polished business website experience with front-end structure and back-end thinking working together.',
+    tags: ['Full Stack', 'Website', 'Responsive UI'],
+    accent: '#0f766e',
+    mockup: 'website',
   },
   {
-    name: 'Glass Landing System',
-    type: 'Brand landing page concept',
-    description: 'A bright, elegant landing page with layered cards, soft gradients, and bold typography.',
-    tags: ['UI Design', 'Motion', 'Accessibility'],
+    name: 'fAInance AI Agent',
+    type: 'AI finance assistant',
+    role: 'AI product designer',
+    description: 'An assistant concept for finance workflows that helps users understand, organize, and act on financial information.',
+    outcome: 'Designed around quick summaries, guided decisions, and simple next steps instead of overwhelming users with raw numbers.',
+    tags: ['AI Agent', 'Finance', 'Automation'],
+    accent: '#7c3aed',
+    mockup: 'agent',
+    image: aiAgentProjectImage,
+    imageAlt: 'fAInance AI agent project preview',
   },
   {
-    name: 'Personal Portfolio',
-    type: 'Starter showcase',
-    description: 'A compact space for your strongest work, achievements, and contact details.',
-    tags: ['React', 'Portfolio', 'Modern Layout'],
+    name: 'Abducted',
+    type: 'Game development',
+    role: 'Game developer',
+    description: 'An interactive game project focused on atmosphere, player decisions, and a memorable gameplay loop.',
+    outcome: 'Built to practice scene flow, tension, feedback, and player interaction inside a more expressive digital experience.',
+    tags: ['Game Dev', 'Interactive', 'Gameplay'],
+    accent: '#e11d48',
+    mockup: 'game',
+    image: abductedProjectImage,
+    imageAlt: 'Abducted game project preview',
+  },
+  {
+    name: 'Smart Campus Attendance System',
+    type: 'Kiosk-based fingerprint backup',
+    role: 'System designer',
+    description: 'A campus attendance system with kiosk flow and fingerprint backup for faster, more reliable student check-ins.',
+    outcome: 'Focused on reducing manual attendance friction while keeping a backup path for identity verification.',
+    tags: ['Attendance', 'Kiosk', 'Biometrics'],
+    accent: '#0f3460',
+    mockup: 'kiosk',
   },
 ];
 
@@ -80,6 +129,45 @@ const techLogos = [
   { src: vscodeLogo, alt: 'Visual Studio Code', title: 'Visual Studio Code' },
   { src: linkedinLogo, alt: 'LinkedIn', title: 'LinkedIn' },
   { src: extraLogo, alt: 'Tech Logo', title: 'Tech Logo' },
+];
+
+const disciplines = [
+  {
+    title: 'UX Design',
+    text: 'UX design helps me make each screen clear and intuitive, so users can move through tasks without confusion or extra effort.',
+    image: uxDesignImage,
+    alt: 'UX design workspace illustration',
+  },
+  {
+    title: 'Product Thinking',
+    text: 'Product thinking keeps me focused on outcomes, making sure every feature solves a real user problem and supports business goals.',
+    image: productThinkingImage,
+    alt: 'Product thinking concept image',
+  },
+  {
+    title: 'Front-end Development',
+    text: 'Front-end development lets me turn ideas into polished interfaces that are responsive, accessible, and consistent across devices.',
+    image: frontEndImage,
+    alt: 'Front-end development screen image',
+  },
+  {
+    title: 'AI Integration',
+    text: 'AI integration helps me design smarter experiences that assist users at the right moment without adding complexity.',
+    image: aiIntegrationImage,
+    alt: 'AI integration concept image',
+  },
+  {
+    title: 'User Research',
+    text: 'User research grounds my design decisions in evidence, so I can validate what people actually need before building.',
+    image: userResearchImage,
+    alt: 'User research process image',
+  },
+  {
+    title: 'Interface Design',
+    text: 'Interface design is where it all comes together, translating UX, product strategy, and technical constraints into a visual system users trust.',
+    image: interfaceDesignImage,
+    alt: 'Interface design concept image',
+  },
 ];
 
 function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay = 18 }) {
@@ -113,6 +201,8 @@ function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay 
 
 function App() {
   const [activeHref, setActiveHref] = useState('#about');
+  const projectSectionRef = useRef(null);
+  const projectTrackRef = useRef(null);
 
   useEffect(() => {
     const syncHash = () => {
@@ -122,6 +212,42 @@ function App() {
     syncHash();
     window.addEventListener('hashchange', syncHash);
     return () => window.removeEventListener('hashchange', syncHash);
+  }, []);
+
+  useEffect(() => {
+    const section = projectSectionRef.current;
+    const track = projectTrackRef.current;
+    if (!section || !track) return undefined;
+
+    let rafId = 0;
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    const updateProjectScroll = () => {
+      rafId = 0;
+      const viewport = section.querySelector('.project-viewport');
+      const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+      const scrollRange = Math.max(1, section.offsetHeight - window.innerHeight);
+      const progress = clamp((window.scrollY - sectionTop) / scrollRange, 0, 1);
+      const visibleWidth = viewport?.clientWidth || window.innerWidth;
+      const maxTranslate = Math.max(0, track.scrollWidth - visibleWidth);
+
+      track.style.transform = `translate3d(${-maxTranslate * progress}px, 0, 0)`;
+      section.style.setProperty('--project-progress', progress.toFixed(3));
+    };
+
+    const requestUpdate = () => {
+      if (!rafId) rafId = requestAnimationFrame(updateProjectScroll);
+    };
+
+    updateProjectScroll();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
   }, []);
 
   return (
@@ -187,7 +313,7 @@ function App() {
           <SplitText
             tag="h2"
             className="hero-title"
-            text="Modern glass UI built for a clean, bright first impression."
+            text="Front-end developer shaping clean product experiences."
             delay={26}
             duration={0.65}
             ease="power3.out"
@@ -201,7 +327,7 @@ function App() {
           <SplitText
             tag="p"
             className="hero-text"
-            text="I am Prince Christian T. Tampepe from Canlaon City, Negros Oriental. I build modern front-end experiences with React, thoughtful spacing, and a polished visual style that feels professional and easy to explore. I enjoy turning ideas into clear, user-friendly interfaces that balance visual appeal with usability, performance, and accessibility. My goal is to create digital products that not only look clean and modern, but also help people complete tasks smoothly and confidently across different devices."
+            text="I am Prince Christian T. Tampepe, a BSIT graduate from Canlaon City, Negros Oriental. I build responsive React interfaces with a product mindset: clear structure, thoughtful motion, usable layouts, and enough visual polish to make the experience feel intentional from the first click."
             delay={8}
             duration={0.45}
             ease="power2.out"
@@ -237,7 +363,8 @@ function App() {
             <p className="eyebrow">Profile</p>
             <h3>Front End Developer</h3>
             <p>
-              Building interfaces that feel modern, calm, and easy to use on any screen size.
+              Focused on React, product interfaces, AI-assisted workflows, and practical systems
+              that people can actually use.
             </p>
           </div>
         </div>
@@ -253,33 +380,55 @@ function App() {
         ))}
       </section>
 
-      <section className="content-section glass-panel" id="about">
-        <AnimatedSectionHeading
-          eyebrow="About Me"
-          title="A simple, professional portfolio with a soft glass finish."
-          eyebrowDelay={60}
-          titleDelay={22}
-        />
-        <p>
-          I&apos;m a UX designer and aspiring product manager exploring the intersection of design,
-          technology, and artificial intelligence. Through my studies at Uxcel (uxcel.com), I&apos;m
-          building a foundation in user-centered design principles and product strategy, with a
-          particular focus on how AI can enhance user experiences without adding complexity. I
-          believe the best interfaces are invisible, they anticipate needs, remove friction, and
-          feel effortless. Based in Manila, I&apos;m passionate about creating digital products that
-          are both thoughtfully designed and technically sound, bridging the gap between what users
-          need and what technology can deliver.
-        </p>
+      <section className="content-section glass-panel about-section" id="about">
+        <div className="about-grid">
+          <div>
+            <AnimatedSectionHeading
+              eyebrow="About Me"
+              title="I turn ideas into interfaces that feel clear, fast, and useful."
+              eyebrowDelay={60}
+              titleDelay={22}
+            />
+          </div>
+          <div className="about-copy">
+            <p>
+              I work at the intersection of front-end development, UX design, and product thinking.
+              My focus is simple: make the screen easier to understand, make the flow easier to
+              complete, and make the result feel polished without adding visual noise.
+            </p>
+            <div className="about-proof">
+              <span>React UI</span>
+              <span>Product Thinking</span>
+              <span>AI Workflows</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="content-section glass-panel" id="education">
-        <AnimatedSectionHeading eyebrow="Education" title="Bachelor of Information Technology" />
-        <div className="education-card">
-          <h3>Cebu Technological University</h3>
-          <p>
-            Graduate of Bachelor of Information Technology from Cebu Technological University,
-            with a focus on modern web development, interface design, and practical software skills.
-          </p>
+        <AnimatedSectionHeading eyebrow="Education" title="Academic background" />
+        <div className="education-grid">
+          <div className="education-card">
+            <p className="education-level">College</p>
+            <h3>Cebu Technological University - Barili Campus</h3>
+            <p>
+              Graduate of Bachelor of Information Technology, with a focus on modern web
+              development, interface design, and practical software skills.
+            </p>
+            <p className="education-address">Cagay, Barili, Cebu</p>
+          </div>
+          <div className="education-card">
+            <p className="education-level">Senior High School</p>
+            <h3>Jose B. Cardenas Senior High School</h3>
+            <p>STEM Strand, With Honors</p>
+            <p className="education-address">Canlaon City, Negros Oriental</p>
+          </div>
+          <div className="education-card">
+            <p className="education-level">High School</p>
+            <h3>Jose B. Cardenas Memorial High School</h3>
+            <p>Junior high school education, With Honors</p>
+            <p className="education-address">Canlaon City, Negros Oriental</p>
+          </div>
         </div>
       </section>
 
@@ -290,58 +439,27 @@ function App() {
         />
         <ScrollStack
           className="profile-scroll-stack"
-          itemDistance={80}
-          itemScale={0.035}
-          itemStackDistance={24}
-          stackPosition="22%"
+          itemDistance={130}
+          itemScale={0.004}
+          itemStackDistance={34}
+          stackPosition="14%"
           scaleEndPosition="8%"
-          baseScale={0.88}
-          rotationAmount={0.4}
-          blurAmount={0.35}
+          baseScale={0.98}
+          rotationAmount={0.12}
+          blurAmount={0.06}
           useWindowScroll={true}
         >
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>UX Design</h3>
-            <p>
-              UX design helps me make each screen clear and intuitive, so users can move through
-              tasks without confusion or extra effort.
-            </p>
-          </ScrollStackItem>
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>Product Thinking</h3>
-            <p>
-              Product thinking keeps me focused on outcomes, making sure every feature solves a
-              real user problem and supports business goals.
-            </p>
-          </ScrollStackItem>
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>Front-end Development</h3>
-            <p>
-              Front-end development lets me turn ideas into polished interfaces that are
-              responsive, accessible, and consistent across devices.
-            </p>
-          </ScrollStackItem>
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>AI Integration</h3>
-            <p>
-              AI integration helps me design smarter experiences that assist users at the right
-              moment without adding complexity.
-            </p>
-          </ScrollStackItem>
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>User Research</h3>
-            <p>
-              User research grounds my design decisions in evidence, so I can validate what people
-              actually need before building.
-            </p>
-          </ScrollStackItem>
-          <ScrollStackItem itemClassName="discipline-card">
-            <h3>Interface Design</h3>
-            <p>
-              Interface design is where it all comes together, translating UX, product strategy,
-              and technical constraints into a visual system users trust.
-            </p>
-          </ScrollStackItem>
+          {disciplines.map((discipline) => (
+            <ScrollStackItem itemClassName="discipline-card" key={discipline.title}>
+              <div className="discipline-copy">
+                <h3>{discipline.title}</h3>
+                <p>{discipline.text}</p>
+              </div>
+              <figure className="discipline-visual">
+                <img src={discipline.image} alt={discipline.alt} />
+              </figure>
+            </ScrollStackItem>
+          ))}
         </ScrollStack>
       </section>
 
@@ -367,6 +485,14 @@ function App() {
               </span>
             ))}
           </div>
+          <div className="skill-groups">
+            {skillGroups.map((group) => (
+              <article className="skill-group" key={group.title}>
+                <h3>{group.title}</h3>
+                <p>{group.items.join(' / ')}</p>
+              </article>
+            ))}
+          </div>
         </div>
 
         <div className="content-section glass-panel contact-mini">
@@ -375,31 +501,99 @@ function App() {
             If you want a clean portfolio, a landing page, or a React interface with a glass look,
             you can reach me directly.
           </p>
+          <div className="contact-mini-list">
+            <a href="mailto:tadeochristianprince@gmail.com">
+              <span>Email</span>
+              <strong>tadeochristianprince@gmail.com</strong>
+            </a>
+            <a href="tel:+639319154737">
+              <span>Contact Number</span>
+              <strong>09319154737</strong>
+            </a>
+            <div>
+              <span>Facebook</span>
+              <strong>Prince T. Tampepe</strong>
+            </div>
+          </div>
           <a className="primary-button compact" href="mailto:tadeochristianprince@gmail.com">
             <span>Email Prince</span>
           </a>
         </div>
       </section>
 
-      <section className="content-section glass-panel" id="projects">
-        <AnimatedSectionHeading
-          eyebrow="Selected Work"
-          title="Portfolio-ready project slots"
-          eyebrowDelay={55}
-        />
-        <div className="project-grid">
-          {projects.map((project) => (
-            <article className="project-card" key={project.name}>
-              <p className="project-type">{project.type}</p>
-              <h3>{project.name}</h3>
-              <p>{project.description}</p>
-              <div className="tag-row">
-                {project.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
-                ))}
-              </div>
-            </article>
-          ))}
+      <section className="horizontal-projects" id="projects" ref={projectSectionRef}>
+        <div className="projects-sticky glass-panel">
+          <AnimatedSectionHeading
+            eyebrow="Selected Work"
+            title="Projects that move from idea to product"
+            eyebrowDelay={55}
+          />
+          <div className="project-progress" aria-hidden="true">
+            <span />
+          </div>
+          <div className="project-viewport">
+            <div className="project-track" ref={projectTrackRef}>
+              {projects.map((project, index) => (
+                <article
+                  className="project-card"
+                  key={project.name}
+                  style={{ '--project-accent': project.accent }}
+                >
+                  <div className="project-copy">
+                    <p className="project-count">0{index + 1}</p>
+                    <p className="project-type">{project.type}</p>
+                    <h3>{project.name}</h3>
+                    <p>{project.description}</p>
+                    <div className="project-detail-grid">
+                      <div>
+                        <span>Role</span>
+                        <strong>{project.role}</strong>
+                      </div>
+                      <div>
+                        <span>Outcome</span>
+                        <strong>{project.outcome}</strong>
+                      </div>
+                    </div>
+                    <div className="tag-row">
+                      {project.tags.map((tag) => (
+                        <span key={tag}>{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div
+                    className={`project-mockup project-mockup-${project.mockup} ${
+                      project.image ? 'project-mockup-image' : ''
+                    }`.trim()}
+                  >
+                    {project.image ? (
+                      <img src={project.image} alt={project.imageAlt} />
+                    ) : (
+                      <>
+                        <div className="mockup-topbar" aria-hidden="true">
+                          <span />
+                          <span />
+                          <span />
+                        </div>
+                        <div className="mockup-body" aria-hidden="true">
+                          <div className="mockup-sidebar" />
+                          <div className="mockup-main">
+                            <span className="mockup-line wide" />
+                            <span className="mockup-line" />
+                            <div className="mockup-grid">
+                              <span />
+                              <span />
+                              <span />
+                              <span />
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -418,7 +612,7 @@ function App() {
       </section>
 
       <footer className="footer-note">
-        <p>Prince Christian T. Tampepe | BSIT Student | Front End Developer</p>
+        <p>Prince Christian T. Tampepe | BSIT Graduate | Front End Developer</p>
       </footer>
     </main>
   );
