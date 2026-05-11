@@ -1281,6 +1281,21 @@ section[id] {
     -webkit-backdrop-filter: none;
   }
 
+  .design-gallery-section.glass-panel {
+    color: var(--white);
+    background:
+      linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(15, 52, 96, 0.94)),
+      var(--navy-1);
+  }
+
+  .design-gallery-section h2 {
+    color: var(--white);
+  }
+
+  .design-gallery-header p {
+    color: rgba(249, 249, 249, 0.78);
+  }
+
   .content-section,
   .info-card,
   .project-card,
