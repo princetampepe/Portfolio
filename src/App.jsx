@@ -6,6 +6,7 @@ import PillNav from './components/PillNav';
 import ScrollStack, { ScrollStackItem } from './components/ScrollStack';
 import SplitText from './components/SplitText';
 import { useEffect, useRef, useState } from 'react';
+import { FiMoon, FiSun } from 'react-icons/fi';
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
 const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
@@ -138,6 +139,7 @@ const projects = [
 const navItems = [
   { label: 'About', href: '#about' },
   { label: 'Education', href: '#education' },
+  { label: 'Experience', href: '#experience' },
   { label: 'Designs', href: '#designs' },
   { label: 'Skills', href: '#skills' },
   { label: 'Projects', href: '#projects' },
@@ -247,11 +249,36 @@ function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay 
   );
 }
 
+function getInitialTheme() {
+  if (typeof window === 'undefined') return 'light';
+
+  try {
+    const savedTheme = window.localStorage.getItem('portfolio-theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
+  } catch {
+    return 'light';
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 function App() {
   const [activeHref, setActiveHref] = useState('#about');
+  const [theme, setTheme] = useState(getInitialTheme);
   const projectSectionRef = useRef(null);
   const projectTrackRef = useRef(null);
   const mobilePerformanceMode = useMobilePerformanceMode();
+  const isDarkMode = theme === 'dark';
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    try {
+      window.localStorage.setItem('portfolio-theme', theme);
+    } catch {
+      // Theme still works for this session when storage is unavailable.
+    }
+  }, [theme]);
 
   useEffect(() => {
     const syncHash = () => {
@@ -316,6 +343,7 @@ function App() {
       '.info-card',
       '.about-section',
       '.education-card',
+      '.experience-card',
       '.discipline-card',
       '.design-gallery-section',
       '#skills',
@@ -381,11 +409,11 @@ function App() {
             warpIntensity={0.72}
             rotation={-34}
             edgeFadeWidth={0.08}
-            colorCycleSpeed={0.3}
-            brightness={0.5}
-            color1="#0A0A0A"
-            color2="#1A1A2E"
-            color3="#16213E"
+          colorCycleSpeed={0.3}
+          brightness={0.5}
+            color1={isDarkMode ? '#0B1020' : '#0A0A0A'}
+            color2={isDarkMode ? '#14213D' : '#1A1A2E'}
+            color3={isDarkMode ? '#E94560' : '#16213E'}
             enableMouseInteraction={true}
             mouseInfluence={1.2}
           />
@@ -403,9 +431,9 @@ function App() {
           className="custom-nav"
           ease="power2.easeOut"
           baseColor="#1A1A2E"
-          pillColor="#F9F9F9"
+          pillColor={isDarkMode ? '#101827' : '#F9F9F9'}
           hoveredPillTextColor="#F9F9F9"
-          pillTextColor="#1A1A2E"
+          pillTextColor={isDarkMode ? '#F9F9F9' : '#1A1A2E'}
           initialLoadAnimation={!mobilePerformanceMode}
           particleCount={15}
           particleDistances={[90, 10]}
@@ -415,6 +443,15 @@ function App() {
           timeVariance={300}
           colors={[1, 2, 3, 1, 2, 3, 1, 4]}
         />
+        <button
+          className="theme-toggle"
+          type="button"
+          aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-pressed={isDarkMode}
+          onClick={() => setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))}
+        >
+          {isDarkMode ? <FiSun aria-hidden="true" /> : <FiMoon aria-hidden="true" />}
+        </button>
       </header>
 
       <section className="hero-grid">
@@ -597,6 +634,32 @@ function App() {
             <p className="education-address">Canlaon City, Negros Oriental</p>
           </div>
         </div>
+      </section>
+
+      <section className="content-section glass-panel experience-section" id="experience">
+        <AnimatedSectionHeading
+          eyebrow="Experience"
+          title="Hands-on work in a real technology environment"
+          staticMode={mobilePerformanceMode}
+        />
+        <article className="experience-card">
+          <div className="experience-main">
+            <p className="experience-period">January 2026 - May 2026</p>
+            <h3>Lifewood Data Technology</h3>
+            <p className="experience-role">Internship</p>
+            <p>
+              Gained practical exposure to professional workflows, technology operations, and
+              workplace collaboration inside a data-focused company environment.
+            </p>
+          </div>
+          <div className="experience-location">
+            <span>Location</span>
+            <strong>
+              i2 Building, Ground Floor, Jose Del Mar Street, Cebu IT Park, Asiatown, Salinas
+              Drive, Apas Lahug, Cebu City, 6000 Cebu, Philippines
+            </strong>
+          </div>
+        </article>
       </section>
 
       <section className="content-section glass-panel stack-showcase" id="disciplines">
