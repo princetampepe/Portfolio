@@ -1,13 +1,21 @@
 import BlurText from './components/BlurText';
-import GlassIcons from './components/GlassIcons';
+import LineWaves from './components/LineWaves';
+import LogoLoop from './components/LogoLoop';
 import PillNav from './components/PillNav';
+import ScrollStack, { ScrollStackItem } from './components/ScrollStack';
 import SplitText from './components/SplitText';
-import TextType from './components/TextType';
 import { useEffect, useState } from 'react';
-import { FiBarChart2, FiBook, FiCloud, FiEdit, FiFileText, FiHeart, FiLayout, FiCode } from 'react-icons/fi';
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
 const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
+const siteLogo = new URL('../logo/logo.png', import.meta.url).href;
+const chatGptLogo = new URL('../logos/chat gpt ㅣㅐ해 - Google 검색.jpg', import.meta.url).href;
+const claudeLogo = new URL('../logos/Claude Logo - Claude Ai - Claude Code Sticker.jpg', import.meta.url).href;
+const githubLogo = new URL('../logos/Dominando GitHub_ Tu guía completa para principiantes.jpg', import.meta.url).href;
+const deepseekLogo = new URL('../logos/Why DeepSeek’s logo represents a new era of AI branding.jpg', import.meta.url).href;
+const vscodeLogo = new URL('../logos/Visual Studio Code logo in vector format - Brandlogos_net.jpg', import.meta.url).href;
+const linkedinLogo = new URL('../logos/Inloggen.jpg', import.meta.url).href;
+const extraLogo = new URL('../logos/download (6).jpg', import.meta.url).href;
 
 const skills = [
   'React',
@@ -22,7 +30,7 @@ const skills = [
 
 const highlights = [
   {
-    title: 'BSIT Student',
+    title: 'BSIT Graduate',
     text: 'Focused on building strong foundations in modern web development and clean user experiences.',
   },
   {
@@ -33,17 +41,6 @@ const highlights = [
     title: 'Canlaon City',
     text: 'Based in Negros Oriental and ready for opportunities, collaborations, and portfolio work.',
   },
-];
-
-const glassIconItems = [
-  { icon: <FiCode />, color: 'blue', label: 'React', customClass: 'glass-icon-item' },
-  { icon: <FiLayout />, color: 'purple', label: 'UI Layout', customClass: 'glass-icon-item' },
-  { icon: <FiFileText />, color: 'indigo', label: 'Docs', customClass: 'glass-icon-item' },
-  { icon: <FiBook />, color: 'green', label: 'Learning', customClass: 'glass-icon-item' },
-  { icon: <FiEdit />, color: 'orange', label: 'Design', customClass: 'glass-icon-item' },
-  { icon: <FiBarChart2 />, color: 'red', label: 'Analytics', customClass: 'glass-icon-item' },
-  { icon: <FiHeart />, color: 'red', label: 'Passion', customClass: 'glass-icon-item' },
-  { icon: <FiCloud />, color: 'blue', label: 'Cloud', customClass: 'glass-icon-item' },
 ];
 
 const projects = [
@@ -67,15 +64,55 @@ const projects = [
   },
 ];
 
+const navItems = [
+  { label: 'About', href: '#about' },
+  { label: 'Education', href: '#education' },
+  { label: 'Skills', href: '#skills' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Contact', href: '#contact' },
+];
+
+const techLogos = [
+  { src: chatGptLogo, alt: 'ChatGPT', title: 'ChatGPT' },
+  { src: claudeLogo, alt: 'Claude', title: 'Claude' },
+  { src: githubLogo, alt: 'GitHub', title: 'GitHub' },
+  { src: deepseekLogo, alt: 'DeepSeek', title: 'DeepSeek' },
+  { src: vscodeLogo, alt: 'Visual Studio Code', title: 'Visual Studio Code' },
+  { src: linkedinLogo, alt: 'LinkedIn', title: 'LinkedIn' },
+  { src: extraLogo, alt: 'Tech Logo', title: 'Tech Logo' },
+];
+
+function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay = 18 }) {
+  return (
+    <div className="section-heading">
+      <BlurText
+        text={eyebrow}
+        animateBy="letters"
+        direction="top"
+        delay={eyebrowDelay}
+        stepDuration={0.28}
+        className="eyebrow section-animated-label"
+      />
+      <SplitText
+        tag="h2"
+        text={title}
+        className="section-animated-title"
+        delay={titleDelay}
+        duration={0.58}
+        ease="power3.out"
+        splitType="words"
+        from={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
+        to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        threshold={0.12}
+        rootMargin="-100px"
+        textAlign="left"
+      />
+    </div>
+  );
+}
+
 function App() {
   const [activeHref, setActiveHref] = useState('#about');
-
-  const navItems = [
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Contact', href: '#contact' },
-  ];
 
   useEffect(() => {
     const syncHash = () => {
@@ -89,21 +126,38 @@ function App() {
 
   return (
     <main className="page-shell">
+      <div className="bg-effect" aria-hidden="true">
+        <LineWaves
+          speed={0.28}
+          innerLineCount={28}
+          outerLineCount={34}
+          warpIntensity={0.72}
+          rotation={-34}
+          edgeFadeWidth={0.08}
+          colorCycleSpeed={0.3}
+          brightness={0.5}
+          color1="#0A0A0A"
+          color2="#1A1A2E"
+          color3="#16213E"
+          enableMouseInteraction={true}
+          mouseInfluence={1.2}
+        />
+      </div>
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
 
       <header className="topbar glass-panel">
         <PillNav
-          logo="/logo.svg"
+          logo={siteLogo}
           logoAlt="Prince Christian T. Tampepe logo"
           items={navItems}
           activeHref={activeHref}
           className="custom-nav"
           ease="power2.easeOut"
-          baseColor="#101828"
-          pillColor="#ffffff"
-          hoveredPillTextColor="#ffffff"
-          pillTextColor="#101828"
+          baseColor="#1A1A2E"
+          pillColor="#F9F9F9"
+          hoveredPillTextColor="#F9F9F9"
+          pillTextColor="#1A1A2E"
           particleCount={15}
           particleDistances={[90, 10]}
           particleR={100}
@@ -116,21 +170,24 @@ function App() {
 
       <section className="hero-grid">
         <div className="hero-copy glass-panel">
-          <TextType
-            as="p"
+          <SplitText
+            tag="p"
             className="eyebrow hero-role"
-            text={['BSIT Student', 'Front End Developer', 'React Developer']}
-            typingSpeed={70}
-            pauseDuration={1200}
-            deletingSpeed={30}
-            showCursor={true}
-            cursorCharacter="|"
-            cursorClassName="hero-cursor"
+            text="Front End Developer"
+            delay={22}
+            duration={0.55}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 18 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-80px"
+            textAlign="left"
           />
           <SplitText
             tag="h2"
-            text="Modern glass UI built for a clean, bright first impression."
             className="hero-title"
+            text="Modern glass UI built for a clean, bright first impression."
             delay={26}
             duration={0.65}
             ease="power3.out"
@@ -141,18 +198,27 @@ function App() {
             rootMargin="-80px"
             textAlign="left"
           />
-          <p className="hero-text">
-            I am Prince Christian T. Tampepe from Canlaon City, Negros Oriental. I build modern
-            front-end experiences with React, thoughtful spacing, and a polished visual style that
-            feels professional and easy to explore.
-          </p>
+          <SplitText
+            tag="p"
+            className="hero-text"
+            text="I am Prince Christian T. Tampepe from Canlaon City, Negros Oriental. I build modern front-end experiences with React, thoughtful spacing, and a polished visual style that feels professional and easy to explore. I enjoy turning ideas into clear, user-friendly interfaces that balance visual appeal with usability, performance, and accessibility. My goal is to create digital products that not only look clean and modern, but also help people complete tasks smoothly and confidently across different devices."
+            delay={8}
+            duration={0.45}
+            ease="power2.out"
+            splitType="words"
+            from={{ opacity: 0, y: 16 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-40px"
+            textAlign="left"
+          />
 
           <div className="hero-actions">
             <a className="primary-button" href={resumeFile} target="_blank" rel="noreferrer" download>
-              Download Resume
+              <span>Download Resume</span>
             </a>
             <a className="secondary-button" href="mailto:tadeochristianprince@gmail.com">
-              Contact Me
+              <span>Contact Me</span>
             </a>
           </div>
 
@@ -188,64 +254,112 @@ function App() {
       </section>
 
       <section className="content-section glass-panel" id="about">
-        <div className="section-heading">
-          <BlurText
-            text="About Me"
-            animateBy="letters"
-            direction="top"
-            delay={60}
-            stepDuration={0.32}
-            className="eyebrow section-animated-label"
-          />
-          <SplitText
-            tag="h2"
-            text="A simple, professional portfolio with a soft glass finish."
-            className="section-animated-title"
-            delay={22}
-            duration={0.62}
-            ease="power3.out"
-            splitType="words"
-            from={{ opacity: 0, y: 28, filter: 'blur(5px)' }}
-            to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            threshold={0.15}
-            rootMargin="-100px"
-            textAlign="left"
-          />
-        </div>
+        <AnimatedSectionHeading
+          eyebrow="About Me"
+          title="A simple, professional portfolio with a soft glass finish."
+          eyebrowDelay={60}
+          titleDelay={22}
+        />
         <p>
-          This portfolio is designed to present your identity clearly: your name, location, course,
-          and front-end focus, all wrapped in a modern interface that uses light backgrounds,
-          dark typography, and layered glass cards.
+          I&apos;m a UX designer and aspiring product manager exploring the intersection of design,
+          technology, and artificial intelligence. Through my studies at Uxcel (uxcel.com), I&apos;m
+          building a foundation in user-centered design principles and product strategy, with a
+          particular focus on how AI can enhance user experiences without adding complexity. I
+          believe the best interfaces are invisible, they anticipate needs, remove friction, and
+          feel effortless. Based in Manila, I&apos;m passionate about creating digital products that
+          are both thoughtfully designed and technically sound, bridging the gap between what users
+          need and what technology can deliver.
         </p>
+      </section>
+
+      <section className="content-section glass-panel" id="education">
+        <AnimatedSectionHeading eyebrow="Education" title="Bachelor of Information Technology" />
+        <div className="education-card">
+          <h3>Cebu Technological University</h3>
+          <p>
+            Graduate of Bachelor of Information Technology from Cebu Technological University,
+            with a focus on modern web development, interface design, and practical software skills.
+          </p>
+        </div>
+      </section>
+
+      <section className="content-section glass-panel stack-showcase" id="disciplines">
+        <AnimatedSectionHeading
+          eyebrow="How I Work"
+          title="Disciplines that shape my product and design approach"
+        />
+        <ScrollStack
+          className="profile-scroll-stack"
+          itemDistance={80}
+          itemScale={0.035}
+          itemStackDistance={24}
+          stackPosition="22%"
+          scaleEndPosition="8%"
+          baseScale={0.88}
+          rotationAmount={0.4}
+          blurAmount={0.35}
+          useWindowScroll={true}
+        >
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>UX Design</h3>
+            <p>
+              UX design helps me make each screen clear and intuitive, so users can move through
+              tasks without confusion or extra effort.
+            </p>
+          </ScrollStackItem>
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>Product Thinking</h3>
+            <p>
+              Product thinking keeps me focused on outcomes, making sure every feature solves a
+              real user problem and supports business goals.
+            </p>
+          </ScrollStackItem>
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>Front-end Development</h3>
+            <p>
+              Front-end development lets me turn ideas into polished interfaces that are
+              responsive, accessible, and consistent across devices.
+            </p>
+          </ScrollStackItem>
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>AI Integration</h3>
+            <p>
+              AI integration helps me design smarter experiences that assist users at the right
+              moment without adding complexity.
+            </p>
+          </ScrollStackItem>
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>User Research</h3>
+            <p>
+              User research grounds my design decisions in evidence, so I can validate what people
+              actually need before building.
+            </p>
+          </ScrollStackItem>
+          <ScrollStackItem itemClassName="discipline-card">
+            <h3>Interface Design</h3>
+            <p>
+              Interface design is where it all comes together, translating UX, product strategy,
+              and technical constraints into a visual system users trust.
+            </p>
+          </ScrollStackItem>
+        </ScrollStack>
       </section>
 
       <section className="split-layout">
         <div className="content-section glass-panel" id="skills">
-          <div className="section-heading">
-            <BlurText
-              text="Skills"
-              animateBy="letters"
-              direction="top"
-              delay={50}
-              stepDuration={0.28}
-              className="eyebrow section-animated-label"
-            />
-            <SplitText
-              tag="h2"
-              text="Tools and strengths"
-              className="section-animated-title"
-              delay={18}
-              duration={0.58}
-              ease="power3.out"
-              splitType="words"
-              from={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              threshold={0.12}
-              rootMargin="-100px"
-              textAlign="left"
+          <AnimatedSectionHeading eyebrow="Skills" title="Tools and strengths" />
+          <div className="logo-loop-wrap">
+            <LogoLoop
+              logos={techLogos}
+              speed={80}
+              direction="left"
+              logoHeight={42}
+              gap={26}
+              pauseOnHover={false}
+              scaleOnHover
+              ariaLabel="Technology logos"
             />
           </div>
-          <GlassIcons items={glassIconItems} className="glass-icons-grid" />
           <div className="skill-grid">
             {skills.map((skill) => (
               <span className="skill-pill" key={skill}>
@@ -256,65 +370,23 @@ function App() {
         </div>
 
         <div className="content-section glass-panel contact-mini">
-          <div className="section-heading">
-            <BlurText
-              text="Reach Out"
-              animateBy="letters"
-              direction="top"
-              delay={50}
-              stepDuration={0.28}
-              className="eyebrow section-animated-label"
-            />
-            <SplitText
-              tag="h2"
-              text="Open for opportunities"
-              className="section-animated-title"
-              delay={18}
-              duration={0.58}
-              ease="power3.out"
-              splitType="words"
-              from={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
-              to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              threshold={0.12}
-              rootMargin="-100px"
-              textAlign="left"
-            />
-          </div>
+          <AnimatedSectionHeading eyebrow="Reach Out" title="Open for opportunities" />
           <p>
             If you want a clean portfolio, a landing page, or a React interface with a glass look,
             you can reach me directly.
           </p>
           <a className="primary-button compact" href="mailto:tadeochristianprince@gmail.com">
-            Email Prince
+            <span>Email Prince</span>
           </a>
         </div>
       </section>
 
       <section className="content-section glass-panel" id="projects">
-        <div className="section-heading">
-          <BlurText
-            text="Selected Work"
-            animateBy="letters"
-            direction="top"
-            delay={55}
-            stepDuration={0.3}
-            className="eyebrow section-animated-label"
-          />
-          <SplitText
-            tag="h2"
-            text="Portfolio-ready project slots"
-            className="section-animated-title"
-            delay={18}
-            duration={0.58}
-            ease="power3.out"
-            splitType="words"
-            from={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
-            to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            threshold={0.12}
-            rootMargin="-100px"
-            textAlign="left"
-          />
-        </div>
+        <AnimatedSectionHeading
+          eyebrow="Selected Work"
+          title="Portfolio-ready project slots"
+          eyebrowDelay={55}
+        />
         <div className="project-grid">
           {projects.map((project) => (
             <article className="project-card" key={project.name}>
@@ -333,27 +405,9 @@ function App() {
 
       <section className="contact-banner glass-panel" id="contact">
         <div>
-          <BlurText
-            text="Contact"
-            animateBy="letters"
-            direction="top"
-            delay={50}
-            stepDuration={0.28}
-            className="eyebrow section-animated-label"
-          />
-          <SplitText
-            tag="h2"
-            text="Let us build something polished and memorable."
-            className="section-animated-title"
-            delay={20}
-            duration={0.6}
-            ease="power3.out"
-            splitType="words"
-            from={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
-            to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            threshold={0.12}
-            rootMargin="-100px"
-            textAlign="left"
+          <AnimatedSectionHeading
+            eyebrow="Contact"
+            title="Let us build something polished and memorable."
           />
         </div>
         <div className="contact-links">

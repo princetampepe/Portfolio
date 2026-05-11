@@ -1,15 +1,15 @@
-.split-text {
-  display: inline-block;
+.split-parent {
   overflow: hidden;
-  white-space: normal;
-  word-break: break-word;
 }
 
-.split-text--chars .split-segment,
-.split-text--words .split-segment {
+.split-char,
+.split-word,
+.split-line {
+  display: inline-block;
   will-change: transform, opacity;
 }
 
-.split-segment--line {
+.split-line {
+  display: block;
   width: 100%;
 }
