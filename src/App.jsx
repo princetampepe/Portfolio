@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
+const darkProfileImage = new URL('../my pic/sunglasses.png', import.meta.url).href;
 const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
 const siteLogo = new URL('../logo/logo.png', import.meta.url).href;
 const chatGptLogo = new URL('../logos/chat gpt ㅣㅐ해 - Google 검색.jpg', import.meta.url).href;
@@ -532,7 +533,17 @@ function App() {
 
         <div className="hero-visual glass-panel">
           <div className="portrait-frame">
-            <img src={profileImage} alt="Prince Christian T. Tampepe portrait" />
+            <img
+              className="profile-image profile-image--light"
+              src={profileImage}
+              alt="Prince Christian T. Tampepe portrait"
+            />
+            <img
+              className="profile-image profile-image--dark"
+              src={darkProfileImage}
+              alt=""
+              aria-hidden="true"
+            />
           </div>
           <div className="visual-card">
             <p className="eyebrow">Profile</p>

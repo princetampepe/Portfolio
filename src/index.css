@@ -461,6 +461,7 @@ section[id] {
 }
 
 .portrait-frame {
+  position: relative;
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: 24px;
@@ -468,11 +469,27 @@ section[id] {
   border: 2px solid var(--border);
 }
 
-.portrait-frame img {
+.portrait-frame .profile-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center top;
+  transition:
+    opacity 650ms ease,
+    transform 650ms ease,
+    filter 650ms ease;
+}
+
+.profile-image--light {
+  opacity: 1;
+}
+
+.profile-image--dark {
+  opacity: 0;
+  filter: saturate(0.94) contrast(1.04);
+  transform: scale(1.015);
 }
 
 .visual-card {
@@ -1909,6 +1926,22 @@ section[id] {
 :root[data-theme='dark'] .profile-scroll-stack {
   background: rgba(248, 250, 252, 0.06);
   border-color: rgba(248, 250, 252, 0.18);
+}
+
+:root[data-theme='dark'] .profile-image--light {
+  opacity: 0;
+  transform: scale(0.985);
+}
+
+:root[data-theme='dark'] .profile-image--dark {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portrait-frame .profile-image {
+    transition: none;
+  }
 }
 
 :root[data-theme='dark'] .visual-card,
