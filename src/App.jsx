@@ -170,7 +170,32 @@ const disciplines = [
   },
 ];
 
-function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay = 18 }) {
+function useMobilePerformanceMode() {
+  const [isPerformanceMode, setIsPerformanceMode] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 760px), (prefers-reduced-motion: reduce)');
+    const syncMode = () => setIsPerformanceMode(query.matches);
+
+    syncMode();
+    query.addEventListener('change', syncMode);
+
+    return () => query.removeEventListener('change', syncMode);
+  }, []);
+
+  return isPerformanceMode;
+}
+
+function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay = 18, staticMode = false }) {
+  if (staticMode) {
+    return (
+      <div className="section-heading">
+        <p className="eyebrow section-animated-label">{eyebrow}</p>
+        <h2 className="section-animated-title">{title}</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="section-heading">
       <BlurText
@@ -203,6 +228,7 @@ function App() {
   const [activeHref, setActiveHref] = useState('#about');
   const projectSectionRef = useRef(null);
   const projectTrackRef = useRef(null);
+  const mobilePerformanceMode = useMobilePerformanceMode();
 
   useEffect(() => {
     const syncHash = () => {
@@ -258,24 +284,88 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 760px)');
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const revealSelectors = [
+      '.hero-copy',
+      '.hero-visual',
+      '.info-card',
+      '.about-section',
+      '.education-card',
+      '.discipline-card',
+      '#skills',
+      '.contact-mini',
+      '.project-card',
+      '.contact-banner',
+    ].join(', ');
+
+    let observer;
+    let revealElements = [];
+
+    const cleanup = () => {
+      observer?.disconnect();
+      observer = undefined;
+      revealElements.forEach((element) => {
+        element.classList.remove('mobile-reveal', 'is-visible');
+      });
+      revealElements = [];
+    };
+
+    const setup = () => {
+      cleanup();
+      if (!mobileQuery.matches || reducedMotionQuery.matches) return;
+
+      revealElements = Array.from(document.querySelectorAll(revealSelectors));
+      revealElements.forEach((element) => element.classList.add('mobile-reveal'));
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      );
+
+      revealElements.forEach((element) => observer.observe(element));
+    };
+
+    setup();
+    mobileQuery.addEventListener('change', setup);
+    reducedMotionQuery.addEventListener('change', setup);
+
+    return () => {
+      mobileQuery.removeEventListener('change', setup);
+      reducedMotionQuery.removeEventListener('change', setup);
+      cleanup();
+    };
+  }, []);
+
   return (
     <main className="page-shell">
       <div className="bg-effect" aria-hidden="true">
-        <LineWaves
-          speed={0.28}
-          innerLineCount={28}
-          outerLineCount={34}
-          warpIntensity={0.72}
-          rotation={-34}
-          edgeFadeWidth={0.08}
-          colorCycleSpeed={0.3}
-          brightness={0.5}
-          color1="#0A0A0A"
-          color2="#1A1A2E"
-          color3="#16213E"
-          enableMouseInteraction={true}
-          mouseInfluence={1.2}
-        />
+        {mobilePerformanceMode ? (
+          <div className="mobile-static-bg" />
+        ) : (
+          <LineWaves
+            speed={0.28}
+            innerLineCount={28}
+            outerLineCount={34}
+            warpIntensity={0.72}
+            rotation={-34}
+            edgeFadeWidth={0.08}
+            colorCycleSpeed={0.3}
+            brightness={0.5}
+            color1="#0A0A0A"
+            color2="#1A1A2E"
+            color3="#16213E"
+            enableMouseInteraction={true}
+            mouseInfluence={1.2}
+          />
+        )}
       </div>
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
@@ -292,6 +382,7 @@ function App() {
           pillColor="#F9F9F9"
           hoveredPillTextColor="#F9F9F9"
           pillTextColor="#1A1A2E"
+          initialLoadAnimation={!mobilePerformanceMode}
           particleCount={15}
           particleDistances={[90, 10]}
           particleR={100}
@@ -304,48 +395,63 @@ function App() {
 
       <section className="hero-grid">
         <div className="hero-copy glass-panel">
-          <SplitText
-            tag="p"
-            className="eyebrow hero-role"
-            text="Front End Developer"
-            delay={22}
-            duration={0.55}
-            ease="power3.out"
-            splitType="chars"
-            from={{ opacity: 0, y: 18 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.1}
-            rootMargin="-80px"
-            textAlign="left"
-          />
-          <SplitText
-            tag="h2"
-            className="hero-title"
-            text="Front-end developer shaping clean product experiences."
-            delay={26}
-            duration={0.65}
-            ease="power3.out"
-            splitType="words"
-            from={{ opacity: 0, y: 42, filter: 'blur(8px)' }}
-            to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            threshold={0.12}
-            rootMargin="-80px"
-            textAlign="left"
-          />
-          <SplitText
-            tag="p"
-            className="hero-text"
-            text="I am Prince Christian T. Tampepe, a BSIT graduate from Canlaon City, Negros Oriental. I build responsive React interfaces with a product mindset: clear structure, thoughtful motion, usable layouts, and enough visual polish to make the experience feel intentional from the first click."
-            delay={8}
-            duration={0.45}
-            ease="power2.out"
-            splitType="words"
-            from={{ opacity: 0, y: 16 }}
-            to={{ opacity: 1, y: 0 }}
-            threshold={0.1}
-            rootMargin="-40px"
-            textAlign="left"
-          />
+          {mobilePerformanceMode ? (
+            <>
+              <p className="eyebrow hero-role">Front End Developer</p>
+              <h2 className="hero-title">Front-end developer shaping clean product experiences.</h2>
+              <p className="hero-text">
+                I am Prince Christian T. Tampepe, a BSIT graduate from Canlaon City, Negros Oriental.
+                I build responsive React interfaces with a product mindset: clear structure,
+                thoughtful motion, usable layouts, and enough visual polish to make the experience
+                feel intentional from the first click.
+              </p>
+            </>
+          ) : (
+            <>
+              <SplitText
+                tag="p"
+                className="eyebrow hero-role"
+                text="Front End Developer"
+                delay={22}
+                duration={0.55}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 18 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-80px"
+                textAlign="left"
+              />
+              <SplitText
+                tag="h2"
+                className="hero-title"
+                text="Front-end developer shaping clean product experiences."
+                delay={26}
+                duration={0.65}
+                ease="power3.out"
+                splitType="words"
+                from={{ opacity: 0, y: 42, filter: 'blur(8px)' }}
+                to={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                threshold={0.12}
+                rootMargin="-80px"
+                textAlign="left"
+              />
+              <SplitText
+                tag="p"
+                className="hero-text"
+                text="I am Prince Christian T. Tampepe, a BSIT graduate from Canlaon City, Negros Oriental. I build responsive React interfaces with a product mindset: clear structure, thoughtful motion, usable layouts, and enough visual polish to make the experience feel intentional from the first click."
+                delay={8}
+                duration={0.45}
+                ease="power2.out"
+                splitType="words"
+                from={{ opacity: 0, y: 16 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-40px"
+                textAlign="left"
+              />
+            </>
+          )}
 
           <div className="hero-actions">
             <a className="primary-button" href={resumeFile} target="_blank" rel="noreferrer" download>
@@ -396,6 +502,7 @@ function App() {
               title="I turn ideas into interfaces that feel clear, fast, and useful."
               eyebrowDelay={60}
               titleDelay={22}
+              staticMode={mobilePerformanceMode}
             />
             <p>
               Front-end developer with product instincts, building responsive interfaces,
@@ -438,13 +545,17 @@ function App() {
       </section>
 
       <section className="content-section glass-panel" id="education">
-        <AnimatedSectionHeading eyebrow="Education" title="Academic background" />
+        <AnimatedSectionHeading
+          eyebrow="Education"
+          title="Academic background"
+          staticMode={mobilePerformanceMode}
+        />
         <div className="education-grid">
           <div className="education-card">
             <p className="education-level">College</p>
             <h3>Cebu Technological University - Barili Campus</h3>
             <p>
-              Graduate of Bachelor of Information Technology, with a focus on modern web
+              Graduate of Bachelor of Science in Information Technology, with a focus on modern web
               development, interface design, and practical software skills.
             </p>
             <p className="education-address">Cagay, Barili, Cebu</p>
@@ -468,6 +579,7 @@ function App() {
         <AnimatedSectionHeading
           eyebrow="How I Work"
           title="Disciplines that shape my product and design approach"
+          staticMode={mobilePerformanceMode}
         />
         <ScrollStack
           className="profile-scroll-stack"
@@ -488,7 +600,7 @@ function App() {
                 <p>{discipline.text}</p>
               </div>
               <figure className="discipline-visual">
-                <img src={discipline.image} alt={discipline.alt} />
+                <img src={discipline.image} alt={discipline.alt} loading="lazy" decoding="async" />
               </figure>
             </ScrollStackItem>
           ))}
@@ -497,18 +609,32 @@ function App() {
 
       <section className="split-layout">
         <div className="content-section glass-panel" id="skills">
-          <AnimatedSectionHeading eyebrow="Skills" title="Tools and strengths" />
+          <AnimatedSectionHeading
+            eyebrow="Skills"
+            title="Tools and strengths"
+            staticMode={mobilePerformanceMode}
+          />
           <div className="logo-loop-wrap">
-            <LogoLoop
-              logos={techLogos}
-              speed={80}
-              direction="left"
-              logoHeight={42}
-              gap={26}
-              pauseOnHover={false}
-              scaleOnHover
-              ariaLabel="Technology logos"
-            />
+            {mobilePerformanceMode ? (
+              <div className="mobile-logo-grid" aria-label="Technology logos">
+                {techLogos.slice(0, 6).map((logo) => (
+                  <span key={logo.title}>
+                    <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" />
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <LogoLoop
+                logos={techLogos}
+                speed={80}
+                direction="left"
+                logoHeight={42}
+                gap={26}
+                pauseOnHover={false}
+                scaleOnHover
+                ariaLabel="Technology logos"
+              />
+            )}
           </div>
           <div className="skill-grid">
             {skills.map((skill) => (
@@ -528,7 +654,11 @@ function App() {
         </div>
 
         <div className="content-section glass-panel contact-mini">
-          <AnimatedSectionHeading eyebrow="Reach Out" title="Open for opportunities" />
+          <AnimatedSectionHeading
+            eyebrow="Reach Out"
+            title="Open for opportunities"
+            staticMode={mobilePerformanceMode}
+          />
           <p>
             If you want a clean portfolio, a landing page, or a React interface with a glass look,
             you can reach me directly.
@@ -559,6 +689,7 @@ function App() {
             eyebrow="Selected Work"
             title="Projects that move from idea to product"
             eyebrowDelay={55}
+            staticMode={mobilePerformanceMode}
           />
           <div className="project-progress" aria-hidden="true">
             <span />
@@ -598,7 +729,7 @@ function App() {
                     }`.trim()}
                   >
                     {project.image ? (
-                      <img src={project.image} alt={project.imageAlt} />
+                      <img src={project.image} alt={project.imageAlt} loading="lazy" decoding="async" />
                     ) : (
                       <>
                         <div className="mockup-topbar" aria-hidden="true">
@@ -634,6 +765,7 @@ function App() {
           <AnimatedSectionHeading
             eyebrow="Contact"
             title="Let us build something polished and memorable."
+            staticMode={mobilePerformanceMode}
           />
         </div>
         <div className="contact-links">

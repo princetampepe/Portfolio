@@ -215,7 +215,11 @@ const PillNav = ({
       const target = document.querySelector(href);
       if (!target) return;
 
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const shouldUseNativeJump = window.matchMedia(
+        '(max-width: 760px), (prefers-reduced-motion: reduce)',
+      ).matches;
+
+      target.scrollIntoView({ behavior: shouldUseNativeJump ? 'auto' : 'smooth', block: 'start' });
       window.history.pushState(null, '', href);
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     }, 230);

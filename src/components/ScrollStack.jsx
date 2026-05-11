@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
 import Lenis from 'lenis';
 import './ScrollStack.css';
 
@@ -28,6 +28,17 @@ const ScrollStack = ({
   const cardsRef = useRef([]);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  const [effectsEnabled, setEffectsEnabled] = useState(true);
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia('(max-width: 760px), (prefers-reduced-motion: reduce)');
+    const syncEffects = () => setEffectsEnabled(!motionQuery.matches);
+
+    syncEffects();
+    motionQuery.addEventListener('change', syncEffects);
+
+    return () => motionQuery.removeEventListener('change', syncEffects);
+  }, []);
 
   const calculateProgress = useCallback((scrollTop, start, end) => {
     if (scrollTop < start) return 0;
@@ -75,6 +86,7 @@ const ScrollStack = ({
   );
 
   const updateCardTransforms = useCallback(() => {
+    if (!effectsEnabled) return;
     if (!cardsRef.current.length || isUpdatingRef.current) return;
     isUpdatingRef.current = true;
 
@@ -170,6 +182,7 @@ const ScrollStack = ({
     parsePercentage,
     getScrollData,
     getElementOffset,
+    effectsEnabled,
   ]);
 
   const handleScroll = useCallback(() => {
@@ -177,17 +190,19 @@ const ScrollStack = ({
   }, [updateCardTransforms]);
 
   const setupLenis = useCallback(() => {
+    if (!effectsEnabled) return;
+
     if (useWindowScroll) {
       const lenis = new Lenis({
-        duration: 1.2,
+        duration: 0.85,
         easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        smoothTouch: false,
+        touchMultiplier: 1,
         infinite: false,
         wheelMultiplier: 1,
-        lerp: 0.1,
-        syncTouch: true,
-        syncTouchLerp: 0.075,
+        lerp: 0.14,
+        syncTouch: false,
       });
       lenis.on('scroll', handleScroll);
       const raf = (time) => {
@@ -204,15 +219,15 @@ const ScrollStack = ({
     const lenis = new Lenis({
       wrapper: scroller,
       content: scroller.querySelector('.scroll-stack-inner'),
-      duration: 1.2,
+      duration: 0.85,
       easing: (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
       smoothWheel: true,
-      touchMultiplier: 2,
+      smoothTouch: false,
+      touchMultiplier: 1,
       infinite: false,
       wheelMultiplier: 1,
-      lerp: 0.1,
-      syncTouch: true,
-      syncTouchLerp: 0.075,
+      lerp: 0.14,
+      syncTouch: false,
     });
     lenis.on('scroll', handleScroll);
     const raf = (time) => {
@@ -221,7 +236,7 @@ const ScrollStack = ({
     };
     animationFrameRef.current = requestAnimationFrame(raf);
     lenisRef.current = lenis;
-  }, [handleScroll, useWindowScroll]);
+  }, [handleScroll, useWindowScroll, effectsEnabled]);
 
   useLayoutEffect(() => {
     const scroller = scrollerRef.current;
@@ -236,13 +251,14 @@ const ScrollStack = ({
 
     cards.forEach((card, i) => {
       if (i < cards.length - 1) card.style.marginBottom = `${itemDistance}px`;
-      card.style.willChange = 'transform, filter';
+      card.style.willChange = effectsEnabled ? 'transform, filter' : 'auto';
       card.style.transformOrigin = 'top center';
       card.style.backfaceVisibility = 'hidden';
-      card.style.transform = 'translateZ(0)';
-      card.style.webkitTransform = 'translateZ(0)';
-      card.style.perspective = '1000px';
-      card.style.webkitPerspective = '1000px';
+      card.style.transform = effectsEnabled ? 'translateZ(0)' : '';
+      card.style.webkitTransform = effectsEnabled ? 'translateZ(0)' : '';
+      card.style.filter = '';
+      card.style.perspective = effectsEnabled ? '1000px' : '';
+      card.style.webkitPerspective = effectsEnabled ? '1000px' : '';
     });
 
     setupLenis();
@@ -255,6 +271,14 @@ const ScrollStack = ({
       cardsRef.current = [];
       lastTransformsRef.current.clear();
       isUpdatingRef.current = false;
+      cards.forEach((card) => {
+        card.style.willChange = '';
+        card.style.transform = '';
+        card.style.webkitTransform = '';
+        card.style.filter = '';
+        card.style.perspective = '';
+        card.style.webkitPerspective = '';
+      });
     };
   }, [
     itemDistance,
@@ -270,6 +294,7 @@ const ScrollStack = ({
     onStackComplete,
     setupLenis,
     updateCardTransforms,
+    effectsEnabled,
   ]);
 
   return (

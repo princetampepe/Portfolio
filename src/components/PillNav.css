@@ -27,6 +27,7 @@
   justify-content: stretch;
   min-width: 0;
   box-shadow: 0 16px 36px rgba(16, 24, 40, 0.12);
+  border: 2px solid rgba(26, 26, 46, 0.14);
 }
 
 .pill-logo {
@@ -40,6 +41,7 @@
   justify-content: center;
   overflow: hidden;
   flex: 0 0 auto;
+  border: 2px solid rgba(255, 255, 255, 0.78);
 }
 
 .pill-logo img {
@@ -178,7 +180,7 @@
   height: var(--nav-h);
   border-radius: 50%;
   background: var(--base, #000);
-  border: none;
+  border: 2px solid rgba(255, 255, 255, 0.78);
   display: none;
   flex-direction: column;
   align-items: center;
@@ -193,6 +195,21 @@
 @media (max-width: 768px) {
   .mobile-menu-button {
     display: flex;
+    box-shadow: 0 12px 24px rgba(16, 24, 40, 0.2);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .mobile-menu-button:active {
+    transform: scale(0.94);
+  }
+
+  .mobile-menu-button[aria-expanded='true'] {
+    box-shadow:
+      0 14px 28px rgba(16, 24, 40, 0.24),
+      0 0 0 6px rgba(15, 52, 96, 0.08);
   }
 }
 
@@ -230,6 +247,7 @@
     overflow: hidden;
     box-shadow: 0 14px 32px rgba(16, 24, 40, 0.16);
     pointer-events: none;
+    border: 2px solid rgba(26, 26, 46, 0.16);
   }
 
   .mobile-menu-popover.is-open {
@@ -257,6 +275,18 @@
   font-weight: 600;
   border-radius: 18px;
   transition: all 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-popover .mobile-menu-link {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-menu-popover .mobile-menu-link:active {
+    transform: scale(0.995);
+  }
 }
 
 .mobile-menu-popover .mobile-menu-link.is-active {

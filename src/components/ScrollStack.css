@@ -18,8 +18,23 @@
 }
 
 @media (max-width: 768px) {
+  .scroll-stack-scroller {
+    overflow: visible;
+    overscroll-behavior: auto;
+    scroll-behavior: auto;
+    -webkit-transform: none;
+    transform: none;
+    will-change: auto;
+  }
+
   .scroll-stack-inner {
     padding: 15vh 1.5rem 30rem;
+  }
+
+  .scroll-stack-card {
+    will-change: auto;
+    transform-style: flat;
+    box-shadow: 0 12px 24px rgba(22, 33, 62, 0.12);
   }
 }
 
