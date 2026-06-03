@@ -23,6 +23,7 @@ export const disciplineAssets = {
 };
 
 export const projectAssets = {
+  website: new URL('../../projects pics/website.png', import.meta.url).href,
   aiAgent: new URL('../../optimized/ai-agent-display.jpg', import.meta.url).href,
   abducted: new URL('../../projects pics/abducted.jpeg', import.meta.url).href,
 };

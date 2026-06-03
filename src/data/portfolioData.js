@@ -63,6 +63,8 @@ export const projects = [
     tags: ['Full Stack', 'Website', 'Responsive UI'],
     accent: '#0f766e',
     mockup: 'website',
+    image: projectAssets.website,
+    imageAlt: 'Lifewood website project preview',
   },
   {
     name: 'fAInance AI Agent',
