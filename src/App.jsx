@@ -11,7 +11,7 @@ const ScrollStack = lazy(() => import('./components/ScrollStack'));
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
 const darkProfileImage = new URL('../optimized/sunglasses-display.jpg', import.meta.url).href;
-const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
+const resumeFile = new URL('../resume/PRINCE CHRISTIAN T. TAMPEPE.pdf', import.meta.url).href;
 const siteLogo = new URL('../optimized/logo-display.jpg', import.meta.url).href;
 const chatGptLogo = new URL('../logos/chat gpt ㅣㅐ해 - Google 검색.jpg', import.meta.url).href;
 const claudeLogo = new URL('../logos/Claude Logo - Claude Ai - Claude Code Sticker.jpg', import.meta.url).href;
