@@ -1,17 +1,18 @@
 import BlurText from './components/BlurText';
-import CircularGallery from './components/CircularGallery';
-import LineWaves from './components/LineWaves';
-import LogoLoop from './components/LogoLoop';
 import PillNav from './components/PillNav';
-import ScrollStack, { ScrollStackItem } from './components/ScrollStack';
 import SplitText from './components/SplitText';
-import { useEffect, useRef, useState } from 'react';
-import { FiMoon, FiSun } from 'react-icons/fi';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { FiArrowRight, FiDownload, FiMail, FiMoon, FiSun } from 'react-icons/fi';
+
+const CircularGallery = lazy(() => import('./components/CircularGallery'));
+const LineWaves = lazy(() => import('./components/LineWaves'));
+const LogoLoop = lazy(() => import('./components/LogoLoop'));
+const ScrollStack = lazy(() => import('./components/ScrollStack'));
 
 const profileImage = new URL('../my pic/Tampepe_ID.jpg', import.meta.url).href;
-const darkProfileImage = new URL('../my pic/sunglasses.png', import.meta.url).href;
+const darkProfileImage = new URL('../optimized/sunglasses-display.jpg', import.meta.url).href;
 const resumeFile = new URL('../resume/Minimalist White and Grey Professional Resume.pdf', import.meta.url).href;
-const siteLogo = new URL('../logo/logo.png', import.meta.url).href;
+const siteLogo = new URL('../optimized/logo-display.jpg', import.meta.url).href;
 const chatGptLogo = new URL('../logos/chat gpt ㅣㅐ해 - Google 검색.jpg', import.meta.url).href;
 const claudeLogo = new URL('../logos/Claude Logo - Claude Ai - Claude Code Sticker.jpg', import.meta.url).href;
 const githubLogo = new URL('../logos/Dominando GitHub_ Tu guía completa para principiantes.jpg', import.meta.url).href;
@@ -25,7 +26,7 @@ const frontEndImage = new URL('../scroll stack pics/front end developing.jpg', i
 const aiIntegrationImage = new URL('../scroll stack pics/ai integration.jpg', import.meta.url).href;
 const userResearchImage = new URL('../scroll stack pics/user research.jpg', import.meta.url).href;
 const interfaceDesignImage = new URL('../scroll stack pics/interface design.jpg', import.meta.url).href;
-const aiAgentProjectImage = new URL('../projects pics/ai agent.png', import.meta.url).href;
+const aiAgentProjectImage = new URL('../optimized/ai-agent-display.jpg', import.meta.url).href;
 const abductedProjectImage = new URL('../projects pics/abducted.jpeg', import.meta.url).href;
 const designImageModules = import.meta.glob('../pic for designs/*.{jpg,jpeg,png,webp}', {
   eager: true,
@@ -97,6 +98,8 @@ const projects = [
     role: 'Full-stack developer',
     description: 'A complete web platform shaped around clean presentation, responsive layouts, and practical data-backed features.',
     outcome: 'Built as a polished business website experience with front-end structure and back-end thinking working together.',
+    impact: 'Responsive business presentation with practical full-stack planning.',
+    focus: 'UI structure, content hierarchy, and scalable website sections.',
     tags: ['Full Stack', 'Website', 'Responsive UI'],
     accent: '#0f766e',
     mockup: 'website',
@@ -107,6 +110,8 @@ const projects = [
     role: 'AI product designer',
     description: 'An assistant concept for finance workflows that helps users understand, organize, and act on financial information.',
     outcome: 'Designed around quick summaries, guided decisions, and simple next steps instead of overwhelming users with raw numbers.',
+    impact: 'Turns dense financial information into guided, readable actions.',
+    focus: 'AI workflow mapping, assistant UX, and decision-support screens.',
     tags: ['AI Agent', 'Finance', 'Automation'],
     accent: '#7c3aed',
     mockup: 'agent',
@@ -119,6 +124,8 @@ const projects = [
     role: 'Game developer',
     description: 'An interactive game project focused on atmosphere, player decisions, and a memorable gameplay loop.',
     outcome: 'Built to practice scene flow, tension, feedback, and player interaction inside a more expressive digital experience.',
+    impact: 'Interactive gameplay prototype with atmosphere and feedback loops.',
+    focus: 'Scene flow, player interaction, and expressive digital experience design.',
     tags: ['Game Dev', 'Interactive', 'Gameplay'],
     accent: '#e11d48',
     mockup: 'game',
@@ -131,6 +138,8 @@ const projects = [
     role: 'System designer',
     description: 'A campus attendance system with kiosk flow and fingerprint backup for faster, more reliable student check-ins.',
     outcome: 'Focused on reducing manual attendance friction while keeping a backup path for identity verification.',
+    impact: 'Reduces attendance friction through kiosk-first check-in planning.',
+    focus: 'Kiosk UX, backup identity verification, and campus workflow design.',
     tags: ['Attendance', 'Kiosk', 'Biometrics'],
     accent: '#0f3460',
     mockup: 'kiosk',
@@ -212,6 +221,45 @@ function useMobilePerformanceMode() {
   return isPerformanceMode;
 }
 
+function useHasEnteredViewport(options = {}) {
+  const ref = useRef(null);
+  const [hasEntered, setHasEntered] = useState(false);
+
+  useEffect(() => {
+    if (hasEntered) return undefined;
+    const element = ref.current;
+    if (!element) return undefined;
+
+    if (!('IntersectionObserver' in window)) {
+      setHasEntered(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setHasEntered(true);
+      observer.disconnect();
+    }, options);
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [hasEntered, options.rootMargin, options.threshold]);
+
+  return [ref, hasEntered];
+}
+
+function StackCard({ children, itemClassName = '' }) {
+  return <div className={`scroll-stack-card ${itemClassName}`.trim()}>{children}</div>;
+}
+
+function SectionLoader({ label = 'Loading section' }) {
+  return (
+    <div className="section-loader" role="status" aria-label={label}>
+      <span />
+    </div>
+  );
+}
+
 function AnimatedSectionHeading({ eyebrow, title, eyebrowDelay = 50, titleDelay = 18, staticMode = false }) {
   if (staticMode) {
     return (
@@ -268,6 +316,9 @@ function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const projectSectionRef = useRef(null);
   const projectTrackRef = useRef(null);
+  const [disciplinesRef, showDisciplines] = useHasEnteredViewport({ rootMargin: '360px 0px' });
+  const [designsRef, showDesignGallery] = useHasEnteredViewport({ rootMargin: '360px 0px' });
+  const [skillsRef, showLogoLoop] = useHasEnteredViewport({ rootMargin: '260px 0px' });
   const mobilePerformanceMode = useMobilePerformanceMode();
   const isDarkMode = theme === 'dark';
 
@@ -282,13 +333,40 @@ function App() {
   }, [theme]);
 
   useEffect(() => {
-    const syncHash = () => {
-      setActiveHref(window.location.hash || '#about');
+    const syncHash = () => setActiveHref(window.location.hash || '#about');
+
+    const sections = navItems
+      .map((item) => document.querySelector(item.href))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (visibleEntry?.target?.id) {
+          setActiveHref(`#${visibleEntry.target.id}`);
+        }
+      },
+      {
+        rootMargin: '-32% 0px -58% 0px',
+        threshold: [0.15, 0.4, 0.65],
+      },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    const handleHashChange = () => {
+      syncHash();
     };
 
     syncHash();
-    window.addEventListener('hashchange', syncHash);
-    return () => window.removeEventListener('hashchange', syncHash);
+    window.addEventListener('hashchange', handleHashChange);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -403,21 +481,23 @@ function App() {
         {mobilePerformanceMode ? (
           <div className="mobile-static-bg" />
         ) : (
-          <LineWaves
-            speed={0.28}
-            innerLineCount={28}
-            outerLineCount={34}
-            warpIntensity={0.72}
-            rotation={-34}
-            edgeFadeWidth={0.08}
-          colorCycleSpeed={0.3}
-          brightness={0.5}
-            color1={isDarkMode ? '#0B1020' : '#0A0A0A'}
-            color2={isDarkMode ? '#14213D' : '#1A1A2E'}
-            color3={isDarkMode ? '#E94560' : '#16213E'}
-            enableMouseInteraction={true}
-            mouseInfluence={1.2}
-          />
+          <Suspense fallback={<div className="mobile-static-bg" />}>
+            <LineWaves
+              speed={0.28}
+              innerLineCount={28}
+              outerLineCount={34}
+              warpIntensity={0.72}
+              rotation={-34}
+              edgeFadeWidth={0.08}
+              colorCycleSpeed={0.3}
+              brightness={0.5}
+              color1={isDarkMode ? '#0B1020' : '#0A0A0A'}
+              color2={isDarkMode ? '#14213D' : '#1A1A2E'}
+              color3={isDarkMode ? '#E94560' : '#16213E'}
+              enableMouseInteraction={true}
+              mouseInfluence={1.2}
+            />
+          </Suspense>
         )}
       </div>
       <div className="ambient ambient-one" />
@@ -460,7 +540,7 @@ function App() {
           {mobilePerformanceMode ? (
             <>
               <p className="eyebrow hero-role">Front End Developer</p>
-              <h2 className="hero-title">Front-end developer shaping clean product experiences.</h2>
+              <h1 className="hero-title">Front-end developer shaping clean product experiences.</h1>
               <p className="hero-text">
                 I am Prince Christian T. Tampepe, a BSIT graduate from Canlaon City, Negros Oriental.
                 I build responsive React interfaces with a product mindset: clear structure,
@@ -485,7 +565,7 @@ function App() {
                 textAlign="left"
               />
               <SplitText
-                tag="h2"
+                tag="h1"
                 className="hero-title"
                 text="Front-end developer shaping clean product experiences."
                 delay={26}
@@ -517,10 +597,16 @@ function App() {
 
           <div className="hero-actions">
             <a className="primary-button" href={resumeFile} target="_blank" rel="noreferrer" download>
+              <FiDownload aria-hidden="true" />
               <span>Download Resume</span>
             </a>
             <a className="secondary-button" href="mailto:tadeochristianprince@gmail.com">
+              <FiMail aria-hidden="true" />
               <span>Contact Me</span>
+            </a>
+            <a className="secondary-button" href="#projects">
+              <FiArrowRight aria-hidden="true" />
+              <span>View Projects</span>
             </a>
           </div>
 
@@ -673,39 +759,57 @@ function App() {
         </article>
       </section>
 
-      <section className="content-section glass-panel stack-showcase" id="disciplines">
+      <section className="content-section glass-panel stack-showcase" id="disciplines" ref={disciplinesRef}>
         <AnimatedSectionHeading
           eyebrow="How I Work"
           title="Disciplines that shape my product and design approach"
           staticMode={mobilePerformanceMode}
         />
-        <ScrollStack
-          className="profile-scroll-stack"
-          itemDistance={130}
-          itemScale={0.004}
-          itemStackDistance={34}
-          stackPosition="14%"
-          scaleEndPosition="8%"
-          baseScale={0.98}
-          rotationAmount={0.12}
-          blurAmount={0.06}
-          useWindowScroll={true}
-        >
-          {disciplines.map((discipline) => (
-            <ScrollStackItem itemClassName="discipline-card" key={discipline.title}>
-              <div className="discipline-copy">
-                <h3>{discipline.title}</h3>
-                <p>{discipline.text}</p>
-              </div>
-              <figure className="discipline-visual">
-                <img src={discipline.image} alt={discipline.alt} loading="lazy" decoding="async" />
-              </figure>
-            </ScrollStackItem>
-          ))}
-        </ScrollStack>
+        {showDisciplines ? (
+          <Suspense fallback={<SectionLoader label="Loading work disciplines" />}>
+            <ScrollStack
+              className="profile-scroll-stack"
+              itemDistance={130}
+              itemScale={0.004}
+              itemStackDistance={34}
+              stackPosition="14%"
+              scaleEndPosition="8%"
+              baseScale={0.98}
+              rotationAmount={0.12}
+              blurAmount={0.06}
+              useWindowScroll={true}
+            >
+              {disciplines.map((discipline) => (
+                <StackCard itemClassName="discipline-card" key={discipline.title}>
+                  <div className="discipline-copy">
+                    <h3>{discipline.title}</h3>
+                    <p>{discipline.text}</p>
+                  </div>
+                  <figure className="discipline-visual">
+                    <img src={discipline.image} alt={discipline.alt} loading="lazy" decoding="async" />
+                  </figure>
+                </StackCard>
+              ))}
+            </ScrollStack>
+          </Suspense>
+        ) : (
+          <div className="profile-scroll-stack profile-scroll-stack--placeholder">
+            {disciplines.slice(0, 2).map((discipline) => (
+              <StackCard itemClassName="discipline-card" key={discipline.title}>
+                <div className="discipline-copy">
+                  <h3>{discipline.title}</h3>
+                  <p>{discipline.text}</p>
+                </div>
+                <figure className="discipline-visual">
+                  <img src={discipline.image} alt={discipline.alt} loading="lazy" decoding="async" />
+                </figure>
+              </StackCard>
+            ))}
+          </div>
+        )}
       </section>
 
-      <section className="content-section glass-panel design-gallery-section" id="designs">
+      <section className="content-section glass-panel design-gallery-section" id="designs" ref={designsRef}>
         <div className="design-gallery-header">
           <AnimatedSectionHeading
             eyebrow="Design Moodboard"
@@ -718,23 +822,33 @@ function App() {
           </p>
         </div>
         <div className="design-gallery-frame">
-          <CircularGallery
-            items={designGalleryItems}
-            bend={mobilePerformanceMode ? 1.25 : 3}
-            textColor="#f9f9f9"
-            borderRadius={0.07}
-            scrollSpeed={mobilePerformanceMode ? 1.4 : 2.2}
-            scrollEase={0.035}
-            showLabels={false}
-            autoScroll
-            autoScrollSpeed={mobilePerformanceMode ? 0.01 : 0.018}
-            pauseOnHover
-          />
+          {showDesignGallery ? (
+            <Suspense fallback={<SectionLoader label="Loading design gallery" />}>
+              <CircularGallery
+                items={designGalleryItems}
+                bend={mobilePerformanceMode ? 1.25 : 3}
+                textColor="#f9f9f9"
+                borderRadius={0.07}
+                scrollSpeed={mobilePerformanceMode ? 1.4 : 2.2}
+                scrollEase={0.035}
+                showLabels={false}
+                autoScroll
+                autoScrollSpeed={mobilePerformanceMode ? 0.01 : 0.018}
+                pauseOnHover
+              />
+            </Suspense>
+          ) : (
+            <div className="gallery-preview-grid" aria-hidden="true">
+              {designGalleryItems.slice(0, 6).map((item) => (
+                <img src={item.image} alt="" loading="lazy" decoding="async" key={item.image} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       <section className="split-layout">
-        <div className="content-section glass-panel" id="skills">
+        <div className="content-section glass-panel" id="skills" ref={skillsRef}>
           <AnimatedSectionHeading
             eyebrow="Skills"
             title="Tools and strengths"
@@ -749,17 +863,27 @@ function App() {
                   </span>
                 ))}
               </div>
+            ) : showLogoLoop ? (
+              <Suspense fallback={<SectionLoader label="Loading technology logos" />}>
+                <LogoLoop
+                  logos={techLogos}
+                  speed={80}
+                  direction="left"
+                  logoHeight={42}
+                  gap={26}
+                  pauseOnHover={false}
+                  scaleOnHover
+                  ariaLabel="Technology logos"
+                />
+              </Suspense>
             ) : (
-              <LogoLoop
-                logos={techLogos}
-                speed={80}
-                direction="left"
-                logoHeight={42}
-                gap={26}
-                pauseOnHover={false}
-                scaleOnHover
-                ariaLabel="Technology logos"
-              />
+              <div className="mobile-logo-grid logo-preview-grid" aria-label="Technology logos">
+                {techLogos.slice(0, 6).map((logo) => (
+                  <span key={logo.title}>
+                    <img src={logo.src} alt={logo.alt} loading="lazy" decoding="async" />
+                  </span>
+                ))}
+              </div>
             )}
           </div>
           <div className="skill-grid">
@@ -842,11 +966,30 @@ function App() {
                         <span>Outcome</span>
                         <strong>{project.outcome}</strong>
                       </div>
+                      <div>
+                        <span>Impact</span>
+                        <strong>{project.impact}</strong>
+                      </div>
+                      <div>
+                        <span>Focus</span>
+                        <strong>{project.focus}</strong>
+                      </div>
                     </div>
                     <div className="tag-row">
                       {project.tags.map((tag) => (
                         <span key={tag}>{tag}</span>
                       ))}
+                    </div>
+                    <div className="project-actions">
+                      <a
+                        className="secondary-button project-button"
+                        href={`mailto:tadeochristianprince@gmail.com?subject=${encodeURIComponent(
+                          `Project walkthrough: ${project.name}`,
+                        )}`}
+                      >
+                        <FiMail aria-hidden="true" />
+                        <span>Request Walkthrough</span>
+                      </a>
                     </div>
                   </div>
                   <div
@@ -894,11 +1037,12 @@ function App() {
             staticMode={mobilePerformanceMode}
           />
         </div>
-        <div className="contact-links">
-          <a href="mailto:tadeochristianprince@gmail.com">tadeochristianprince@gmail.com</a>
-          <a href="tel:+639319154737">09319154737</a>
-          <span>Canlaon City, Negros Oriental</span>
-        </div>
+          <div className="contact-links">
+            <a href="mailto:tadeochristianprince@gmail.com">tadeochristianprince@gmail.com</a>
+            <a href="tel:+639319154737">09319154737</a>
+            <a href={resumeFile} target="_blank" rel="noreferrer">Resume PDF</a>
+            <span>Canlaon City, Negros Oriental</span>
+          </div>
       </section>
 
       <footer className="footer-note">
